@@ -1,0 +1,1297 @@
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Search, Heart, Clock, Flame, ChefHat, X, Copy, Check, CheckCircle2, Circle } from 'lucide-react';
+
+// --- BASE DE DADOS: 30 RECEITAS COMPLETAS ---
+const recipesData = [
+  // CAFÉ DA MANHÃ (7)
+  {
+    id: 1,
+    title: "Panqueca de banana com aveia",
+    category: "Café da manhã",
+    description: "Maciez e sabor natural, base de banana e pronta rapidamente em uma frigideira.",
+    time: "15 min",
+    calories: "210 kcal",
+    difficulty: "Fácil",
+    portions: "1 porção",
+    icon: "🥞",
+    color: "bg-yellow-100",
+    badgeColor: "bg-yellow-200 text-yellow-800",
+    ingredients: [
+      "1 banana bem madura",
+      "2 colheres de sopa de aveia em flocos finos",
+      "1 ovo inteiro",
+      "1 pitada de canela em pó",
+      "1 colher de chá de óleo de coco (para untar)"
+    ],
+    steps: [
+      "Descasque a banana e amasse bem em um prato fundo usando um garfo até formar um purê.",
+      "Adicione o ovo e bata levemente junto com a banana amassada.",
+      "Incorpore a aveia e a canela, misturando até obter uma massa homogênea.",
+      "Aqueça uma frigideira antiaderente em fogo médio e unte com o óleo de coco.",
+      "Despeje a massa no centro da frigideira. Deixe cozinhar por cerca de 2-3 minutos de cada lado, até dourar.",
+      "Sirva imediatamente."
+    ],
+    tips: "Sirva com fios de mel, pasta de amendoim ou rodelas extras de banana por cima.",
+    substitutions: "A aveia pode ser substituída por farinha de amêndoas para uma versão low carb."
+  },
+  {
+    id: 2,
+    title: "Omelete de espinafre",
+    category: "Café da manhã",
+    description: "Proteína de qualidade e ferro para começar o dia com muita energia e sabor.",
+    time: "10 min",
+    calories: "180 kcal",
+    difficulty: "Fácil",
+    portions: "1 porção",
+    icon: "🍳",
+    color: "bg-yellow-100",
+    badgeColor: "bg-yellow-200 text-yellow-800",
+    ingredients: [
+      "2 ovos",
+      "1 xícara de folhas de espinafre fresco picadas",
+      "1 colher de sopa de queijo cottage ou ricota",
+      "Sal e pimenta-do-reino a gosto",
+      "1 fio de azeite de oliva"
+    ],
+    steps: [
+      "Em uma tigela, bata os ovos com um garfo até misturar bem as claras e as gemas.",
+      "Tempere com sal e pimenta a gosto.",
+      "Aqueça o azeite em uma frigideira em fogo médio.",
+      "Adicione o espinafre e refogue rapidamente por 1 minuto até murchar.",
+      "Despeje os ovos batidos sobre o espinafre.",
+      "Quando as bordas começarem a soltar, adicione o queijo no centro e dobre a omelete ao meio.",
+      "Cozinhe por mais 1 minuto e sirva."
+    ],
+    tips: "Não cozinhe os ovos em fogo muito alto para que a omelete fique macia e não resseque.",
+    substitutions: "O espinafre pode ser trocado por couve finamente picada."
+  },
+  {
+    id: 3,
+    title: "Iogurte natural com acompanhamentos",
+    category: "Café da manhã",
+    description: "Crocante, refrescante e rico em probióticos saudáveis.",
+    time: "5 min",
+    calories: "280 kcal",
+    difficulty: "Fácil",
+    portions: "1 porção",
+    icon: "🥣",
+    color: "bg-yellow-100",
+    badgeColor: "bg-yellow-200 text-yellow-800",
+    ingredients: [
+      "1 potinho (170g) de iogurte natural desnatado ou integral",
+      "2 colheres de sopa de granola sem adição de açúcar",
+      "5 morangos picados",
+      "1 colher de chá de sementes de chia"
+    ],
+    steps: [
+      "Em um bowl de servir, coloque o iogurte natural como base.",
+      "Distribua os morangos picados por cima do iogurte.",
+      "Adicione a granola de forma uniforme.",
+      "Salpique as sementes de chia por último para decorar e adicionar fibras.",
+      "Consuma imediatamente para manter a crocância da granola."
+    ],
+    tips: "Monte em um pote de vidro com tampa caso queira levar para comer no trabalho.",
+    substitutions: "Morangos podem ser substituídos por mirtilos, manga ou maçã picada."
+  },
+  {
+    id: 4,
+    title: "Tapioca de ovo e cottage",
+    category: "Café da manhã",
+    description: "Clássico brasileiro, recheio cremoso e alto teor de proteína.",
+    time: "10 min",
+    calories: "250 kcal",
+    difficulty: "Fácil",
+    portions: "1 porção",
+    icon: "🌯",
+    color: "bg-yellow-100",
+    badgeColor: "bg-yellow-200 text-yellow-800",
+    ingredients: [
+      "3 colheres de sopa de goma de tapioca hidratada",
+      "1 ovo",
+      "2 colheres de sopa de queijo cottage",
+      "Sal a gosto",
+      "Orégano a gosto"
+    ],
+    steps: [
+      "Prepare os ovos mexidos em uma panela pequena, temperando com sal e orégano. Reserve.",
+      "Aqueça uma frigideira antiaderente (sem óleo) em fogo médio.",
+      "Espalhe a goma de tapioca uniformemente, cobrindo todo o fundo da frigideira.",
+      "Deixe cozinhar por cerca de 2 minutos até que os grãos se unam e forme um disco.",
+      "Vire a tapioca, coloque os ovos mexidos e o queijo cottage de um lado.",
+      "Dobre a tapioca ao meio, deixe aquecer por mais 30 segundos e sirva."
+    ],
+    tips: "Peneire a goma de tapioca direto na frigideira para que a massa fique mais fina e maleável.",
+    substitutions: "Cottage pode ser substituído por requeijão light ou creme de ricota."
+  },
+  {
+    id: 5,
+    title: "Smoothie verde detox",
+    category: "Café da manhã",
+    description: "Energia pura para começar o dia, cheio de vitaminas e fibras essenciais.",
+    time: "5 min",
+    calories: "150 kcal",
+    difficulty: "Fácil",
+    portions: "1 porção",
+    icon: "🥤",
+    color: "bg-yellow-100",
+    badgeColor: "bg-yellow-200 text-yellow-800",
+    ingredients: [
+      "1 folha grande de couve manteiga",
+      "1/2 maçã verde sem sementes",
+      "1 rodela de gengibre (aprox. 1cm)",
+      "Suco de 1 limão espremido",
+      "200ml de água de coco ou água mineral gelada",
+      "Folhas de hortelã a gosto"
+    ],
+    steps: [
+      "Lave bem a folha de couve, a maçã e o gengibre.",
+      "Corte a maçã em pedaços menores para facilitar o liquidificador.",
+      "Coloque todos os ingredientes no liquidificador.",
+      "Bata em potência alta por cerca de 2 minutos, até que nenhum pedaço sólido esteja visível.",
+      "Beba imediatamente, preferencialmente sem coar para aproveitar as fibras."
+    ],
+    tips: "Adicione gelo antes de bater para um smoothie mais refrescante e cremoso.",
+    substitutions: "A maçã pode ser trocada por abacaxi para um sabor mais tropical."
+  },
+  {
+    id: 6,
+    title: "Pão de queijo fit de batata-doce",
+    category: "Café da manhã",
+    description: "Macio por dentro e sem polvilho, uma versão nutritiva do pão de queijo.",
+    time: "30 min",
+    calories: "90 kcal",
+    difficulty: "Médio",
+    portions: "10 unidades",
+    icon: "🧀",
+    color: "bg-yellow-100",
+    badgeColor: "bg-yellow-200 text-yellow-800",
+    ingredients: [
+      "1 xícara de purê de batata-doce cozida",
+      "1 xícara de polvilho doce",
+      "1/2 xícara de polvilho azedo",
+      "1/4 de xícara de azeite ou óleo de coco",
+      "2 colheres de sopa de queijo parmesão ralado light",
+      "1 colher de chá de sal",
+      "Água (apenas se necessário para dar ponto)"
+    ],
+    steps: [
+      "Preaqueça o forno a 200°C.",
+      "Em uma tigela grande, misture o purê de batata-doce com o azeite, o queijo e o sal.",
+      "Vá adicionando os polvilhos aos poucos, amassando bem com as mãos.",
+      "Se a massa estiver esfarelando muito, pingue gotinhas de água até desgrudar das mãos.",
+      "Faça pequenas bolinhas com as mãos.",
+      "Disponha em uma assadeira antiaderente deixando um pequeno espaço entre eles.",
+      "Asse por 20 a 25 minutos até dourarem por fora."
+    ],
+    tips: "Você pode congelar as bolinhas cruas e assar apenas o que for consumir no dia.",
+    substitutions: "A batata-doce pode ser substituída por mandioquinha (batata baroa) ou abóbora."
+  },
+  {
+    id: 7,
+    title: "Mingau de aveia com cacau",
+    category: "Café da manhã",
+    description: "Quentinho e reconfortante, com sabor de chocolate mas sem açúcar adicionado.",
+    time: "10 min",
+    calories: "240 kcal",
+    difficulty: "Fácil",
+    portions: "1 porção",
+    icon: "🍫",
+    color: "bg-yellow-100",
+    badgeColor: "bg-yellow-200 text-yellow-800",
+    ingredients: [
+      "3 colheres de sopa de aveia em flocos grossos",
+      "200ml de leite desnatado ou vegetal (amêndoas, aveia)",
+      "1 colher de sopa de cacau em pó 100%",
+      "1 colher de chá de adoçante culinário (opcional)",
+      "1/2 banana cortada em rodelas (para cobertura)"
+    ],
+    steps: [
+      "Em uma panela pequena, misture a aveia, o leite, o cacau em pó e o adoçante (se usar).",
+      "Leve ao fogo médio, mexendo sempre para não empelotar e não grudar no fundo.",
+      "Quando começar a ferver, abaixe o fogo e continue mexendo até engrossar na consistência desejada (cerca de 5 minutos).",
+      "Desligue o fogo e transfira para um prato fundo ou bowl.",
+      "Decore com as rodelas de banana e sirva morno."
+    ],
+    tips: "Para um toque extra, salpique nibs de cacau ou coco ralado sem açúcar por cima.",
+    substitutions: "Pode trocar a banana da cobertura por morangos ou pasta de amendoim."
+  },
+
+  // ALMOÇO (8)
+  {
+    id: 8,
+    title: "Frango grelhado com quinoa",
+    category: "Almoço",
+    description: "Prato completo, colorido e muito fácil de montar. Rico em proteínas e carboidratos complexos.",
+    time: "25 min",
+    calories: "380 kcal",
+    difficulty: "Fácil",
+    portions: "1 porção",
+    icon: "🍗",
+    color: "bg-green-100",
+    badgeColor: "bg-green-200 text-green-800",
+    ingredients: [
+      "150g de peito de frango em filé",
+      "1/3 de xícara de quinoa em grãos crua",
+      "1/2 cenoura ralada",
+      "Suco de 1/2 limão",
+      "1 dente de alho amassado",
+      "Sal, pimenta-do-reino e páprica doce a gosto",
+      "1 colher de chá de azeite"
+    ],
+    steps: [
+      "Lave a quinoa em água corrente. Em uma panela, cozinhe a quinoa com 2/3 de xícara de água e uma pitada de sal em fogo baixo, com a panela tampada, até a água secar (cerca de 15 min).",
+      "Enquanto a quinoa cozinha, tempere o frango com limão, alho, sal, pimenta e páprica.",
+      "Aqueça o azeite em uma frigideira ou grelha e doure o frango de ambos os lados até ficar bem cozido por dentro.",
+      "Quando a quinoa estiver pronta, misture-a com a cenoura ralada.",
+      "Sirva o filé de frango acompanhado da quinoa colorida."
+    ],
+    tips: "Deixe o frango marinando nos temperos por 30 minutos na geladeira para intensificar o sabor.",
+    substitutions: "A quinoa pode ser substituída por arroz integral ou arroz de couve-flor."
+  },
+  {
+    id: 9,
+    title: "Salmão assado com brócolis",
+    category: "Almoço",
+    description: "Ômega 3 na medida certa, um prato de restaurante saudável e feito na sua casa.",
+    time: "25 min",
+    calories: "450 kcal",
+    difficulty: "Médio",
+    portions: "1 porção",
+    icon: "🐟",
+    color: "bg-green-100",
+    badgeColor: "bg-green-200 text-green-800",
+    ingredients: [
+      "1 posta de salmão (aprox. 180g)",
+      "1 xícara de flores de brócolis",
+      "1 colher de sopa de azeite de oliva",
+      "Suco de 1/2 limão",
+      "Sal grosso e pimenta-do-reino a gosto",
+      "1 dente de alho fatiado finamente"
+    ],
+    steps: [
+      "Preaqueça o forno a 200°C.",
+      "Forre uma assadeira com papel alumínio ou papel manteiga.",
+      "Coloque o salmão no centro e tempere com limão, sal, pimenta e um fio de azeite.",
+      "Distribua o brócolis ao redor do salmão, regue com o restante do azeite, salpique sal e as fatias de alho.",
+      "Asse por 15 a 20 minutos, dependendo do ponto que prefere o peixe.",
+      "Sirva quente, regando com o caldinho que se forma na assadeira."
+    ],
+    tips: "Tome cuidado para não assar demais o salmão, ele deve estar úmido e macio por dentro.",
+    substitutions: "O salmão pode ser trocado por posta de tilápia ou pescada."
+  },
+  {
+    id: 10,
+    title: "Escondidinho de batata-doce",
+    category: "Almoço",
+    description: "A versão leve do clássico brasileiro, com recheio nutritivo e casquinha gratinada.",
+    time: "40 min",
+    calories: "340 kcal",
+    difficulty: "Médio",
+    portions: "2 porções",
+    icon: "🍠",
+    color: "bg-green-100",
+    badgeColor: "bg-green-200 text-green-800",
+    ingredients: [
+      "2 batatas-doces médias",
+      "300g de peito de frango cozido e desfiado",
+      "1 cebola pequena picada",
+      "2 tomates maduros picados (sem sementes)",
+      "2 colheres de sopa de requeijão light ou creme de ricota",
+      "1 colher de sopa de queijo parmesão ralado",
+      "Sal e salsinha a gosto"
+    ],
+    steps: [
+      "Cozinhe a batata-doce em água até ficar bem macia. Escorra, descasque e amasse bem até formar um purê. Misture o requeijão light e um pouco de sal ao purê.",
+      "Em uma panela, refogue a cebola com um pingo de azeite, adicione os tomates e cozinhe até desmancharem um pouco.",
+      "Acrescente o frango desfiado, tempere com sal e salsinha. Se ficar seco, coloque 2 colheres de água. Refogue por 3 minutos.",
+      "Em um refratário pequeno, faça uma camada com metade do purê.",
+      "Coloque todo o recheio de frango por cima.",
+      "Cubra com o restante do purê e salpique o queijo parmesão.",
+      "Leve ao forno (ou airfryer) a 200°C por 15 minutos até gratinar."
+    ],
+    tips: "Faça o purê com a batata ainda quente, é mais fácil de amassar.",
+    substitutions: "O frango pode ser substituído por carne moída magra (patinho) ou cogumelos refogados."
+  },
+  {
+    id: 11,
+    title: "Strogonoff de frango light",
+    category: "Almoço",
+    description: "Cremoso, saboroso e sem creme de leite pesado. Apenas o que você precisa.",
+    time: "30 min",
+    calories: "320 kcal",
+    difficulty: "Fácil",
+    portions: "2 porções",
+    icon: "🍲",
+    color: "bg-green-100",
+    badgeColor: "bg-green-200 text-green-800",
+    ingredients: [
+      "400g de peito de frango em cubos pequenos",
+      "1 xícara de champignon fatiado",
+      "1/2 cebola picada",
+      "1 dente de alho picado",
+      "1/2 xícara de molho de tomate natural (passata)",
+      "1 pote (170g) de iogurte natural desnatado",
+      "1 colher de sopa de mostarda amarela",
+      "Sal e azeite a gosto"
+    ],
+    steps: [
+      "Tempere os cubos de frango com sal e pimenta.",
+      "Em uma panela, aqueça um fio de azeite e refogue a cebola e o alho até dourarem.",
+      "Adicione o frango e cozinhe até secar a água e começar a dourar.",
+      "Junte o champignon e o molho de tomate. Cozinhe por cerca de 5 minutos.",
+      "Adicione a mostarda e misture bem.",
+      "Desligue o fogo! Isso é essencial para o iogurte não talhar. Adicione o iogurte natural e misture até ficar um creme homogêneo.",
+      "Ajuste o sal se necessário e sirva."
+    ],
+    tips: "O segredo para não talhar o molho é realmente incorporar o iogurte com o fogo desligado.",
+    substitutions: "Iogurte natural pode ser trocado por creme de ricota ou creme de leite fresco light."
+  },
+  {
+    id: 12,
+    title: "Wrap integral com abacate",
+    category: "Almoço",
+    description: "Leveza, frescor e praticidade. Ideal para dias quentes ou almoços apressados.",
+    time: "10 min",
+    calories: "280 kcal",
+    difficulty: "Fácil",
+    portions: "1 porção",
+    icon: "🥑",
+    color: "bg-green-100",
+    badgeColor: "bg-green-200 text-green-800",
+    ingredients: [
+      "1 pão tipo tortilha/wrap integral",
+      "1/4 de abacate amassado",
+      "2 fatias de peito de peru ou frango desfiado",
+      "Folhas de rúcula fresca",
+      "1 colher de chá de suco de limão",
+      "Sal e pimenta preta a gosto"
+    ],
+    steps: [
+      "Em uma tigela pequena, amasse o abacate e tempere com o suco de limão, sal e pimenta. Isso será a 'maionese' do wrap.",
+      "Aqueça levemente a tortilha em uma frigideira por 10 segundos de cada lado apenas para torná-la maleável.",
+      "Espalhe a pasta de abacate sobre a tortilha.",
+      "Distribua o peito de peru (ou frango) e por cima as folhas de rúcula.",
+      "Dobre as bordas laterais para dentro e enrole o wrap apertando bem.",
+      "Corte ao meio na diagonal e sirva frio."
+    ],
+    tips: "Se quiser levar na marmita, embrulhe o wrap bem firme em papel alumínio.",
+    substitutions: "Peito de peru pode ser substituído por atum em água ou queijo branco."
+  },
+  {
+    id: 13,
+    title: "Risoto de couve-flor com cogumelos",
+    category: "Almoço",
+    description: "Textura de risoto autêntico, mas reduzido em carboidratos e cheio de umami.",
+    time: "25 min",
+    calories: "230 kcal",
+    difficulty: "Médio",
+    portions: "2 porções",
+    icon: "🍄",
+    color: "bg-green-100",
+    badgeColor: "bg-green-200 text-green-800",
+    ingredients: [
+      "1 couve-flor média limpa",
+      "200g de cogumelos variados (shimeji, paris) fatiados",
+      "1/2 cebola finamente picada",
+      "2 colheres de sopa de creme de ricota",
+      "1 colher de sopa de queijo parmesão ralado",
+      "1 colher de sopa de manteiga ou azeite",
+      "Sal e cebolinha a gosto"
+    ],
+    steps: [
+      "Corte a couve-flor em pedaços e processe no liquidificador ou processador até obter grãos do tamanho de arroz. Reserve.",
+      "Em uma frigideira grande, derreta a manteiga (ou azeite) e refogue a cebola até ficar translúcida.",
+      "Adicione os cogumelos e refogue em fogo alto por cerca de 4 minutos, até dourarem.",
+      "Acrescente a couve-flor processada na panela, tempere com sal e refogue por mais 3 a 5 minutos. A couve-flor deve ficar cozida, mas 'al dente'.",
+      "Desligue o fogo, incorpore o creme de ricota e o parmesão para dar cremosidade.",
+      "Finalize com cebolinha fresca picada e sirva."
+    ],
+    tips: "Não adicione água ao cozinhar a couve-flor, ela solta a própria água e queremos textura soltinha antes do creme.",
+    substitutions: "Creme de ricota pode ser trocado por requeijão light ou creme de leite vegano."
+  },
+  {
+    id: 14,
+    title: "Feijão tropeiro fit com couve",
+    category: "Almoço",
+    description: "Tradição mineira em versão repaginada, mais leve, mas mantendo a alma.",
+    time: "30 min",
+    calories: "350 kcal",
+    difficulty: "Médio",
+    portions: "3 porções",
+    icon: "🥘",
+    color: "bg-green-100",
+    badgeColor: "bg-green-200 text-green-800",
+    ingredients: [
+      "2 xícaras de feijão carioquinha cozido al dente (sem o caldo)",
+      "1 xícara de couve cortada bem fininha",
+      "2 ovos",
+      "100g de lombo de porco magro (ou peito de frango) em cubinhos",
+      "1/2 xícara de farinha de mandioca torrada",
+      "1 cebola e 2 dentes de alho picados",
+      "Azeite, sal e pimenta a gosto"
+    ],
+    steps: [
+      "Em uma panela grande ou tacho, aqueça um fio de azeite e frite o lombo em cubinhos até dourar bem. Reserve.",
+      "Na mesma panela, adicione mais um pouco de azeite e refogue a cebola e o alho.",
+      "Arraste o refogado para o canto da panela, adicione os ovos no espaço livre e mexa até cozinharem.",
+      "Misture a carne dourada de volta na panela, adicione o feijão cozido (sem caldo) e misture cuidadosamente.",
+      "Vá adicionando a farinha de mandioca aos poucos, mexendo para agregar sem ressecar muito.",
+      "Por último, desligue o fogo, junte a couve picada, ajuste o sal e misture. O calor residual cozinhará a couve no ponto certo."
+    ],
+    tips: "Cozinhe o feijão apenas com água e sal, e deixe os grãos inteiros para o tropeiro ficar no ponto certo.",
+    substitutions: "A carne suína pode ser totalmente substituída por tofu defumado em cubos para versão vegetariana."
+  },
+  {
+    id: 15,
+    title: "Carne moída com abobrinha",
+    category: "Almoço",
+    description: "Refogado rápido, nutritivo e que salva a marmita no meio da semana.",
+    time: "20 min",
+    calories: "280 kcal",
+    difficulty: "Fácil",
+    portions: "2 porções",
+    icon: "🥩",
+    color: "bg-green-100",
+    badgeColor: "bg-green-200 text-green-800",
+    ingredients: [
+      "300g de carne moída magra (patinho)",
+      "1 abobrinha média cortada em cubos",
+      "1 cebola pequena e 2 dentes de alho picados",
+      "1 tomate picado",
+      "Sal, pimenta síria e cheiro-verde a gosto",
+      "1 fio de azeite"
+    ],
+    steps: [
+      "Aqueça o azeite em uma panela e doure a cebola e o alho.",
+      "Acrescente a carne moída, amassando bem com uma colher para soltar os grumos. Tempere com sal e pimenta síria.",
+      "Cozinhe até a carne perder a cor rosada e a água que ela solta secar.",
+      "Adicione o tomate picado e a abobrinha em cubos. Misture bem.",
+      "Tampe a panela, abaixe o fogo e deixe cozinhar por cerca de 8 a 10 minutos (a abobrinha cozinha no próprio vapor).",
+      "Finalize com cheiro-verde fresco antes de servir."
+    ],
+    tips: "Se gostar de molho, adicione meia xícara de molho de tomate natural junto com a abobrinha.",
+    substitutions: "A abobrinha pode ser trocada por chuchu ou vagem picada."
+  },
+
+  // JANTAR (6)
+  {
+    id: 16,
+    title: "Sopa de abóbora com gengibre",
+    category: "Jantar",
+    description: "Aconchegante e termogênica, perfeita para noites frias e para a digestão.",
+    time: "35 min",
+    calories: "150 kcal",
+    difficulty: "Fácil",
+    portions: "2 porções",
+    icon: "🎃",
+    color: "bg-purple-100",
+    badgeColor: "bg-purple-200 text-purple-800",
+    ingredients: [
+      "500g de abóbora cabotiá descascada e picada",
+      "1 colher de sopa de gengibre ralado",
+      "1/2 cebola e 1 dente de alho picados",
+      "500ml de água ou caldo de legumes caseiro",
+      "Sal e pimenta-do-reino a gosto",
+      "Azeite de oliva (para refogar)"
+    ],
+    steps: [
+      "Em uma panela, aqueça um fio de azeite e refogue a cebola e o alho até dourarem.",
+      "Adicione a abóbora picada e o gengibre ralado, refogando por mais 2 minutos.",
+      "Despeje a água (ou caldo) até quase cobrir a abóbora. Tempere com sal e pimenta.",
+      "Tampe a panela e cozinhe em fogo médio por cerca de 20 minutos, ou até a abóbora ficar muito macia.",
+      "Retire do fogo, deixe amornar levemente e bata tudo com um mixer de mão ou liquidificador até formar um creme liso.",
+      "Volte à panela apenas para reaquecer se necessário e sirva."
+    ],
+    tips: "Sirva com sementes de abóbora torradas por cima para adicionar crocância.",
+    substitutions: "A abóbora cabotiá pode ser trocada por abóbora moranga ou cenoura."
+  },
+  {
+    id: 17,
+    title: "Hambúrguer de grão-de-bico",
+    category: "Jantar",
+    description: "Por dentro suculento, por fora crocante. Um lanche sem carne maravilhoso.",
+    time: "40 min",
+    calories: "200 kcal",
+    difficulty: "Médio",
+    portions: "4 unidades",
+    icon: "🍔",
+    color: "bg-purple-100",
+    badgeColor: "bg-purple-200 text-purple-800",
+    ingredients: [
+      "2 xícaras de grão-de-bico cozido (sem caldo)",
+      "1/2 cebola picada",
+      "2 colheres de sopa de aveia em flocos finos (ou farinha de grão-de-bico)",
+      "1 colher de chá de cominho em pó",
+      "Salsinha picada, sal e pimenta a gosto",
+      "Fio de azeite para grelhar"
+    ],
+    steps: [
+      "No processador de alimentos, coloque o grão-de-bico cozido, a cebola, cominho, sal, pimenta e salsinha.",
+      "Processe até virar uma massa grossa (não deixe virar um purê liso, deixe pedacinhos para textura).",
+      "Transfira para uma tigela e adicione a aveia aos poucos. Amasse com as mãos até dar liga.",
+      "Divida a massa em 4 partes iguais e molde em formato de hambúrguer.",
+      "Aqueça uma frigideira antiaderente com um fio de azeite em fogo médio.",
+      "Grelhe os hambúrgueres por cerca de 4 a 5 minutos de cada lado, até formar uma casquinha dourada."
+    ],
+    tips: "Pode ser feito no forno ou na airfryer a 200°C por cerca de 15 minutos.",
+    substitutions: "O grão-de-bico pode ser substituído por feijão fradinho ou lentilha."
+  },
+  {
+    id: 18,
+    title: "Espaguete de abobrinha ao pesto",
+    category: "Jantar",
+    description: "Massa muito leve com pesto caseiro de manjericão, rico em gorduras boas.",
+    time: "20 min",
+    calories: "210 kcal",
+    difficulty: "Fácil",
+    portions: "2 porções",
+    icon: "🍝",
+    color: "bg-purple-100",
+    badgeColor: "bg-purple-200 text-purple-800",
+    ingredients: [
+      "2 abobrinhas italianas médias",
+      "1 xícara de folhas de manjericão fresco",
+      "1/4 de xícara de azeite de oliva",
+      "1 dente de alho",
+      "2 colheres de sopa de nozes ou castanha de caju",
+      "2 colheres de sopa de parmesão ralado",
+      "Sal a gosto"
+    ],
+    steps: [
+      "Com o auxílio de um ralador ou fatiador julienne, corte as abobrinhas em formato de espaguete (descarte o miolo com sementes).",
+      "Para o molho pesto: no liquidificador ou processador, bata o manjericão, azeite, alho, nozes, parmesão e uma pitada de sal até formar um molho homogêneo. Reserve.",
+      "Em uma frigideira grande, refogue o espaguete de abobrinha com um fiozinho de azeite por no máximo 2 a 3 minutos (ele deve ficar 'al dente', não cozinhe demais para não soltar muita água).",
+      "Desligue o fogo, junte o molho pesto à abobrinha e misture bem.",
+      "Sirva imediatamente."
+    ],
+    tips: "Se a abobrinha soltar muita água ao refogar, escorra levemente antes de colocar o molho.",
+    substitutions: "As nozes do pesto podem ser substituídas por amendoim ou castanha-do-pará."
+  },
+  {
+    id: 19,
+    title: "Tilápia no papelote com ervas",
+    category: "Jantar",
+    description: "Peixe muito macio que cozinha no vapor com os próprios sucos naturais.",
+    time: "25 min",
+    calories: "190 kcal",
+    difficulty: "Fácil",
+    portions: "1 porção",
+    icon: "🌿",
+    color: "bg-purple-100",
+    badgeColor: "bg-purple-200 text-purple-800",
+    ingredients: [
+      "1 filé de tilápia (aprox. 150g)",
+      "1/2 tomate fatiado",
+      "1/4 de cebola fatiada em rodelas finas",
+      "Raminhos de alecrim e tomilho frescos",
+      "1 colher de chá de azeite de oliva",
+      "Suco de 1/2 limão, sal e pimenta-do-reino",
+      "Papel alumínio ou papel manteiga"
+    ],
+    steps: [
+      "Preaqueça o forno a 200°C.",
+      "Corte um pedaço grande de papel alumínio (tamanho suficiente para embrulhar o peixe).",
+      "Coloque as rodelas de cebola e tomate no centro do papel, formando uma 'caminha'.",
+      "Acomode o filé de tilápia por cima.",
+      "Tempere o peixe com sal, pimenta, limão e azeite.",
+      "Coloque os raminhos de ervas por cima de tudo.",
+      "Feche bem o papelote, dobrando as bordas para que o vapor não escape.",
+      "Coloque o pacotinho em uma assadeira e asse por 15 a 18 minutos."
+    ],
+    tips: "Ao abrir o papelote, tome cuidado com o vapor quente que vai sair.",
+    substitutions: "Tilápia pode ser trocada por merluza, pescada ou frango em cubos bem pequenos."
+  },
+  {
+    id: 20,
+    title: "Caldo verde leve",
+    category: "Jantar",
+    description: "Clássico encorpado, substituindo a batata por couve-flor para uma digestão ultra leve.",
+    time: "30 min",
+    calories: "160 kcal",
+    difficulty: "Fácil",
+    portions: "2 porções",
+    icon: "🥬",
+    color: "bg-purple-100",
+    badgeColor: "bg-purple-200 text-purple-800",
+    ingredients: [
+      "1 couve-flor média picada",
+      "1 maço de couve manteiga fatiada bem fina",
+      "1 linguiça calabresa fina finamente fatiada (ou paio light) - opcional",
+      "1 cebola e 2 dentes de alho picados",
+      "700ml de água ou caldo de galinha light",
+      "Sal, pimenta e azeite a gosto"
+    ],
+    steps: [
+      "Em uma panela, refogue a cebola e o alho em um fio de azeite até dourarem.",
+      "Se for usar a linguiça, adicione as rodelas e frite bem. Retire metade da linguiça para decorar no final.",
+      "Adicione a couve-flor picada à panela e despeje a água (ou caldo). Tempere com sal e pimenta.",
+      "Cozinhe com a panela tampada até a couve-flor estar macia (cerca de 15 minutos).",
+      "Desligue o fogo e bata o caldo com um mixer na própria panela até ficar um creme liso.",
+      "Ligue o fogo novamente, junte a couve fatiada e a linguiça reservada. Deixe ferver por 3 minutos até a couve amaciar.",
+      "Ajuste o sal e sirva quente."
+    ],
+    tips: "Para uma versão 100% vegetariana e ainda mais leve, elimine a linguiça e use tofu defumado.",
+    substitutions: "A couve-flor pode ser trocada por chuchu ou abobrinha para o caldo base."
+  },
+  {
+    id: 21,
+    title: "Berinjela recheada",
+    category: "Jantar",
+    description: "Vegetariana, leve e cheia de fibras para uma noite tranquila.",
+    time: "45 min",
+    calories: "170 kcal",
+    difficulty: "Médio",
+    portions: "2 porções",
+    icon: "🍆",
+    color: "bg-purple-100",
+    badgeColor: "bg-purple-200 text-purple-800",
+    ingredients: [
+      "1 berinjela grande",
+      "1 xícara de cogumelos picados ou proteína de soja hidratada",
+      "1/2 xícara de molho de tomate caseiro",
+      "1/2 cebola picada",
+      "2 colheres de sopa de queijo muçarela ralado light",
+      "Azeite, sal, pimenta e orégano a gosto"
+    ],
+    steps: [
+      "Preaqueça o forno a 200°C.",
+      "Corte a berinjela ao meio no sentido do comprimento.",
+      "Com uma colher, retire parte do miolo, deixando uma borda de aprox. 1cm para formar 'barquinhas'. Pique o miolo retirado e reserve.",
+      "Coloque as metades de berinjela em uma assadeira, regue com azeite, salpique sal e asse por 15 minutos.",
+      "Enquanto isso, em uma panela, refogue a cebola e o miolo da berinjela. Adicione os cogumelos (ou soja) e o molho de tomate. Cozinhe até engrossar. Tempere.",
+      "Retire as berinjelas do forno, preencha com o refogado.",
+      "Cubra com o queijo ralado e orégano. Volte ao forno por mais 10 minutos para gratinar."
+    ],
+    tips: "Deixe a berinjela crua de molho em água e sal por 10 minutos antes de cortar para tirar o amargor.",
+    substitutions: "O recheio pode ser feito com carne moída magra ou frango desfiado."
+  },
+
+  // LANCHES (5)
+  {
+    id: 22,
+    title: "Homus caseiro com cenoura",
+    category: "Lanches",
+    description: "Cremoso, super rápido e ótimo para petiscar no meio da tarde sem culpa.",
+    time: "10 min",
+    calories: "130 kcal",
+    difficulty: "Fácil",
+    portions: "4 porções",
+    icon: "🥕",
+    color: "bg-orange-100",
+    badgeColor: "bg-orange-200 text-orange-800",
+    ingredients: [
+      "1 xícara de grão-de-bico cozido",
+      "1 colher de sopa de tahine (pasta de gergelim)",
+      "Suco de 1 limão",
+      "1 dente de alho pequeno",
+      "2 colheres de sopa de azeite de oliva",
+      "Sal e cominho a gosto",
+      "2 cenouras cruas cortadas em palitos (para acompanhar)"
+    ],
+    steps: [
+      "No processador de alimentos ou liquidificador, adicione o grão-de-bico, o tahine, o limão, o alho, o azeite, o sal e o cominho.",
+      "Bata até obter uma pasta homogênea. Se estiver muito denso, adicione 1 ou 2 colheres de água gelada para ajudar a bater e ficar mais liso.",
+      "Despeje em um potinho de servir.",
+      "Descasque e corte as cenouras em palitos longitudinais.",
+      "Sirva o homus regado com um fio de azeite e os palitos de cenoura para mergulhar."
+    ],
+    tips: "Se não tiver tahine, pode tentar fazer sem, o sabor muda um pouco mas continua delicioso (purê de grão de bico temperado).",
+    substitutions: "Os palitos de cenoura podem ser trocados por palitos de pepino ou aipo."
+  },
+  {
+    id: 23,
+    title: "Bolinho de frango com cenoura",
+    category: "Lanches",
+    description: "Assado, sem fritura, super nutritivo. Perfeito para lancheira e academia.",
+    time: "35 min",
+    calories: "140 kcal",
+    difficulty: "Médio",
+    portions: "6 unidades",
+    icon: "🧆",
+    color: "bg-orange-100",
+    badgeColor: "bg-orange-200 text-orange-800",
+    ingredients: [
+      "300g de peito de frango cru cortado em cubos",
+      "1 cenoura média ralada",
+      "1/2 cebola picada",
+      "2 colheres de sopa de aveia em flocos finos",
+      "Salsinha picada, sal e pimenta a gosto"
+    ],
+    steps: [
+      "Preaqueça o forno ou airfryer a 200°C.",
+      "Em um processador de alimentos, coloque o frango cru e pulse até ficar como uma carne moída (não bata até virar pasta líquida).",
+      "Transfira o frango para uma tigela e adicione a cenoura ralada, a cebola, a aveia, a salsinha, o sal e a pimenta.",
+      "Misture tudo muito bem com as mãos até formar uma massa modelável.",
+      "Umedeça as mãos com água e modele pequenos bolinhos.",
+      "Coloque em uma assadeira antiaderente levemente untada.",
+      "Asse por 20 minutos (ou 15 min na airfryer) até que estejam cozidos e dourados por fora."
+    ],
+    tips: "Você pode congelar os bolinhos já assados e esquentar no micro-ondas quando precisar.",
+    substitutions: "O frango pode ser substituído por atum em lata bem escorrido (nesse caso, asse por menos tempo)."
+  },
+  {
+    id: 24,
+    title: "Chips de couve crocante",
+    category: "Lanches",
+    description: "Crocante e salgadinho, o substituto perfeito para salgadinhos industrializados.",
+    time: "15 min",
+    calories: "70 kcal",
+    difficulty: "Fácil",
+    portions: "2 porções",
+    icon: "🍃",
+    color: "bg-orange-100",
+    badgeColor: "bg-orange-200 text-orange-800",
+    ingredients: [
+      "1 maço de couve manteiga fresco",
+      "1 colher de sopa de azeite de oliva",
+      "Sal e páprica defumada a gosto"
+    ],
+    steps: [
+      "Lave muito bem as folhas de couve e seque COMPLETAMENTE. Esse é o segredo para ficar crocante. Use um pano limpo ou papel toalha.",
+      "Retire o talo central duro das folhas e rasgue a parte verde em pedaços médios com as mãos.",
+      "Coloque as folhas rasgadas em uma tigela grande.",
+      "Regue com o azeite, o sal e a páprica. Massageie bem as folhas com as mãos para que o azeite cubra todas as partes.",
+      "Espalhe as folhas em uma assadeira grande, sem sobrepor (faça em duas fornadas se necessário).",
+      "Asse em forno preaquecido a 150°C (temperatura bem baixa) por 10 a 15 minutos, observando para não queimar."
+    ],
+    tips: "Fique de olho no forno, os chips de couve passam de crocantes para queimados e amargos em 1 minuto.",
+    substitutions: "Páprica pode ser substituída por levedura nutricional ou pimenta-do-reino."
+  },
+  {
+    id: 25,
+    title: "Barrinha de castanhas e tâmaras",
+    category: "Lanches",
+    description: "Energia natural e saciedade para levar na bolsa. Crua e sem açúcar adicionado.",
+    time: "20 min",
+    calories: "180 kcal",
+    difficulty: "Fácil",
+    portions: "8 barrinhas",
+    icon: "🌰",
+    color: "bg-orange-100",
+    badgeColor: "bg-orange-200 text-orange-800",
+    ingredients: [
+      "1 xícara de tâmaras sem caroço (se estiverem secas, hidrate em água quente por 10 min)",
+      "1 xícara de mix de castanhas (amendoim, caju, pará, nozes)",
+      "2 colheres de sopa de cacau em pó (opcional)",
+      "1 colher de sopa de sementes de abóbora (opcional)"
+    ],
+    steps: [
+      "Coloque o mix de castanhas no processador e pulse algumas vezes para quebrar, deixando pedaços para dar textura. Reserve.",
+      "No processador vazio, coloque as tâmaras (escorridas se você as hidratou) e bata até virar uma pasta espessa.",
+      "Adicione as castanhas picadas de volta ao processador, junte o cacau em pó e pulse mais algumas vezes apenas para misturar tudo. A massa deve ficar grudenta.",
+      "Forre um refratário pequeno com papel manteiga ou plástico filme.",
+      "Despeje a mistura e aperte firmemente com as mãos ou as costas de uma colher, formando uma placa compacta e nivelada.",
+      "Leve à geladeira por pelo menos 1 hora para firmar.",
+      "Retire, corte no formato de barrinhas e embale individualmente."
+    ],
+    tips: "Mantenha as barrinhas na geladeira para não perderem a consistência firme.",
+    substitutions: "Tâmaras podem ser substituídas por uvas passas ou damascos secos."
+  },
+  {
+    id: 26,
+    title: "Mix de frutas com iogurte e canela",
+    category: "Lanches",
+    description: "Refrescante, doce na medida e pronto em poucos minutos. Um lanche clássico.",
+    time: "5 min",
+    calories: "120 kcal",
+    difficulty: "Fácil",
+    portions: "1 porção",
+    icon: "🍓",
+    color: "bg-orange-100",
+    badgeColor: "bg-orange-200 text-orange-800",
+    ingredients: [
+      "1/2 maçã picada em cubos",
+      "1/2 banana cortada em rodelas",
+      "1/2 xícara de mamão picado",
+      "2 colheres de sopa de iogurte natural desnatado",
+      "Canela em pó a gosto"
+    ],
+    steps: [
+      "Em um potinho ou tigela funda, misture a maçã, a banana e o mamão.",
+      "Por cima das frutas, coloque as colheradas de iogurte natural.",
+      "Salpique a canela em pó generosamente sobre o iogurte.",
+      "Misture tudo antes de comer para distribuir o sabor."
+    ],
+    tips: "Esprema algumas gotas de limão sobre a maçã e a banana antes de montar para que não escureçam se for levar para o trabalho.",
+    substitutions: "Use qualquer fruta da estação que tiver em casa: kiwi, melão, morango."
+  },
+
+  // SOBREMESAS (4)
+  {
+    id: 27,
+    title: "Mousse de maracujá fit",
+    category: "Sobremesas",
+    description: "Azedinho, cremoso e sem o leite condensado pesado tradicional. Puro frescor.",
+    time: "15 min",
+    calories: "110 kcal",
+    difficulty: "Médio",
+    portions: "4 porções",
+    icon: "🍮",
+    color: "bg-pink-100",
+    badgeColor: "bg-pink-200 text-pink-800",
+    ingredients: [
+      "1 xícara de suco de maracujá concentrado (puro ou polpa natural batida e coada)",
+      "2 potes (340g total) de iogurte natural desnatado",
+      "3 colheres de sopa de leite em pó desnatado",
+      "Adoçante culinário (sucralose, xilitol ou eritritol) a gosto",
+      "1/2 pacote (6g) de gelatina incolor sem sabor"
+    ],
+    steps: [
+      "No liquidificador, coloque o suco de maracujá, o iogurte, o leite em pó e o adoçante. Bata bem até ficar homogêneo.",
+      "Em uma xícara pequena, hidrate a gelatina incolor com 3 colheres de sopa de água e leve ao micro-ondas por 15 segundos para derreter (não deixe ferver).",
+      "Com o liquidificador batendo na menor velocidade, despeje a gelatina derretida em fio para incorporar bem.",
+      "Distribua o mousse em tacinhas individuais.",
+      "Leve à geladeira por pelo menos 2 a 3 horas, até ficar firme."
+    ],
+    tips: "Para decorar, use as sementes do maracujá por cima das tacinhas.",
+    substitutions: "Suco de maracujá pode ser substituído por suco de limão para um mousse de limão fit."
+  },
+  {
+    id: 28,
+    title: "Brownie de feijão-preto",
+    category: "Sobremesas",
+    description: "Chocolate intenso, textura de bolo cremoso e sem farinha. O feijão é o segredo nutricional e você não vai sentir o gosto dele!",
+    time: "40 min",
+    calories: "150 kcal",
+    difficulty: "Médio",
+    portions: "8 porções",
+    icon: "🧁",
+    color: "bg-pink-100",
+    badgeColor: "bg-pink-200 text-pink-800",
+    ingredients: [
+      "1 xícara e meia de feijão-preto cozido APENAS em água (sem sal ou alho) e bem escorrido",
+      "3 ovos",
+      "3 colheres de sopa de óleo de coco derretido",
+      "1/2 xícara de cacau em pó 100%",
+      "1/2 xícara de xilitol, eritritol ou açúcar mascavo",
+      "1 colher de chá de extrato de baunilha",
+      "1 colher de chá de fermento em pó",
+      "Um punhado de gotas de chocolate 70% (opcional)"
+    ],
+    steps: [
+      "Preaqueça o forno a 180°C. Unte uma forma quadrada pequena com óleo de coco e polvilhe cacau em pó.",
+      "Lave bem o feijão cozido em água corrente usando uma peneira, para tirar qualquer sabor residual. Escorra bem.",
+      "No processador ou liquidificador potente, bata o feijão com os ovos, o óleo de coco e a baunilha até formar um creme completamente liso. (Isso é crucial para não ter pedaços de feijão).",
+      "Adicione o cacau em pó e o adoçante/açúcar e bata novamente para misturar.",
+      "Por último, coloque o fermento e misture delicadamente com uma colher.",
+      "Despeje a massa na forma, salpique as gotas de chocolate por cima.",
+      "Asse por cerca de 25 a 30 minutos. O palito deve sair levemente sujo para um brownie úmido."
+    ],
+    tips: "Deixe esfriar completamente antes de cortar, pois ele ganha consistência à medida que esfria.",
+    substitutions: "O óleo de coco pode ser trocado por manteiga derretida."
+  },
+  {
+    id: 29,
+    title: "Picolé de iogurte com frutas",
+    category: "Sobremesas",
+    description: "Refrescante, feito em casa e livre de conservantes. Alegria para crianças e adultos.",
+    time: "10 min",
+    calories: "80 kcal",
+    difficulty: "Fácil",
+    portions: "6 picolés",
+    icon: "🍧",
+    color: "bg-pink-100",
+    badgeColor: "bg-pink-200 text-pink-800",
+    ingredients: [
+      "2 potes (340g) de iogurte natural desnatado ou grego",
+      "1 xícara de frutas vermelhas (morangos, amoras, mirtilos) frescas ou congeladas",
+      "2 colheres de sopa de mel ou adoçante natural de sua preferência",
+      "Forminhas para picolé"
+    ],
+    steps: [
+      "Se as frutas vermelhas forem grandes (como morangos inteiros), pique-as em pedaços pequenos.",
+      "Em uma tigela, misture o iogurte natural com o mel ou adoçante.",
+      "Em forminhas próprias para picolé (ou copinhos de café descartáveis), coloque uma colher de iogurte e alguns pedaços de frutas.",
+      "Vá intercalando camadas de iogurte e frutas até preencher a forminha.",
+      "Insira o palito no centro (se usar copinho de plástico, cubra com papel alumínio e fure no meio com o palito para ele ficar reto).",
+      "Leve ao congelador por pelo menos 4 a 6 horas até ficar bem sólido.",
+      "Para desenformar, passe rapidamente o fundo da forminha em água corrente."
+    ],
+    tips: "Se preferir um picolé rosa e homogêneo, bata as frutas junto com o iogurte no liquidificador antes de congelar.",
+    substitutions: "Frutas vermelhas podem ser substituídas por pedaços de manga, pêssego ou kiwi."
+  },
+  {
+    id: 30,
+    title: "Bolo de banana sem farinha",
+    category: "Sobremesas",
+    description: "Fofinho, perfumado, doce e perfeito para o lanche da tarde acompanhando um café.",
+    time: "45 min",
+    calories: "200 kcal",
+    difficulty: "Médio",
+    portions: "8 fatias",
+    icon: "🎂",
+    color: "bg-pink-100",
+    badgeColor: "bg-pink-200 text-pink-800",
+    ingredients: [
+      "4 bananas bem maduras (nanica ou prata)",
+      "4 ovos",
+      "1 xícara de uvas passas (sem caroço)",
+      "1 xícara de aveia em flocos finos",
+      "1 colher de sopa de fermento em pó",
+      "1/2 xícara de óleo (óleo de coco ou girassol)",
+      "1 colher de chá de canela em pó"
+    ],
+    steps: [
+      "Preaqueça o forno a 180°C e unte uma forma redonda (com furo no meio) com óleo e farinha de aveia.",
+      "No liquidificador, coloque os ovos, o óleo, as bananas descascadas cortadas em pedaços e as uvas passas.",
+      "Bata tudo muito bem até obter um creme liso e homogêneo. (As passas que vão adoçar o bolo).",
+      "Despeje esse creme em uma tigela grande e adicione a aveia em flocos e a canela.",
+      "Misture bem com uma espátula ou fouet.",
+      "Por último, adicione o fermento e misture delicadamente.",
+      "Despeje a massa na forma untada e asse por 30 a 35 minutos. Faça o teste do palito, ele deve sair limpo.",
+      "Espere amornar para desenformar."
+    ],
+    tips: "Não pule as uvas passas achando que é opcional; é ela que adoça a massa substituindo o açúcar refinado.",
+    substitutions: "Uvas passas podem ser substituídas por tâmaras para adoçar, e a aveia por farinha de amêndoas."
+  }
+];
+
+// --- COMPONENTES ---
+
+// Badge para exibir tempo, calorias, etc.
+const InfoBadge = ({ icon: Icon, text }) => (
+  <div className="flex items-center text-xs text-gray-600 bg-white/50 px-2 py-1 rounded-full border border-white/80 shadow-sm whitespace-nowrap">
+    <Icon className="w-3 h-3 mr-1 text-gray-500" />
+    {text}
+  </div>
+);
+
+export default function LivroReceitas() {
+  const [activeCategory, setActiveCategory] = useState('Todas');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [favorites, setFavorites] = useState([]);
+  const [selectedRecipe, setSelectedRecipe] = useState(null);
+
+  // Estados do Modal
+  const [checkedIngredients, setCheckedIngredients] = useState({});
+  const [copied, setCopied] = useState(false);
+
+  // Reset checklist e copy state when opening a new recipe
+  useEffect(() => {
+    if (selectedRecipe) {
+      setCheckedIngredients({});
+      setCopied(false);
+    }
+  }, [selectedRecipe]);
+
+  const categories = ['Todas', 'Café da manhã', 'Almoço', 'Jantar', 'Lanches', 'Sobremesas'];
+
+  const toggleFavorite = (e, recipeId) => {
+    e.stopPropagation();
+    setFavorites(prev => 
+      prev.includes(recipeId) 
+        ? prev.filter(id => id !== recipeId)
+        : [...prev, recipeId]
+    );
+  };
+
+  const handleCopyList = () => {
+    if (!selectedRecipe) return;
+    const textToCopy = `Lista de Compras: ${selectedRecipe.title}\n\n` + 
+      selectedRecipe.ingredients.map(ing => `- [ ] ${ing}`).join('\n');
+    
+    navigator.clipboard.writeText(textToCopy).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
+  const toggleIngredient = (idx) => {
+    setCheckedIngredients(prev => ({
+      ...prev,
+      [idx]: !prev[idx]
+    }));
+  };
+
+  const filteredRecipes = recipesData.filter(recipe => {
+    const matchesCategory = activeCategory === 'Todas' || recipe.category === activeCategory;
+    const matchesSearch = recipe.title.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
+
+  return (
+    <div className="min-h-screen bg-[#FFFDF9] text-gray-800 font-sans font-medium">
+      
+      {/* HEADER E NAVEGAÇÃO FIXA */}
+      <header className="sticky top-0 z-10 bg-[#FFFDF9]/90 backdrop-blur-md border-b border-gray-100 shadow-sm p-4 lg:px-8">
+        <div className="max-w-6xl mx-auto flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-gray-900 flex items-center gap-2">
+              <span className="text-3xl">🥗</span> As <span className="text-orange-500">30 receitas</span> do seu PDF
+            </h1>
+            <p className="text-sm text-gray-500 font-normal mt-1">Filtre por categoria, pesquise pelo nome e toque no ❤️ para marcar as suas favoritas.</p>
+          </div>
+          
+          <div className="flex items-center gap-3">
+            <div className="relative w-full md:w-64">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Buscar receita..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-9 pr-4 py-2 rounded-full border border-gray-200 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-transparent transition-all"
+              />
+            </div>
+            <div className="flex items-center bg-pink-50 px-3 py-2 rounded-full border border-pink-100 shadow-sm shrink-0">
+              <Heart className="w-4 h-4 text-pink-500 fill-pink-500 mr-2" />
+              <span className="font-bold text-pink-600">{favorites.length}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* TABS DE CATEGORIA */}
+        <div className="max-w-6xl mx-auto mt-4 overflow-x-auto pb-2 flex gap-2 no-scrollbar">
+          {categories.map(cat => (
+            <button
+              key={cat}
+              onClick={() => setActiveCategory(cat)}
+              className={`px-4 py-2 rounded-full whitespace-nowrap text-sm font-semibold transition-all duration-300 ${
+                activeCategory === cat 
+                  ? 'bg-green-500 text-white shadow-md'
+                  : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 hover:border-gray-300'
+              }`}
+            >
+              {cat} {cat !== 'Todas' && `(${recipesData.filter(r => r.category === cat).length})`}
+              {cat === 'Todas' && `(${recipesData.length})`}
+            </button>
+          ))}
+        </div>
+      </header>
+
+      {/* GRID DE RECEITAS */}
+      <main className="max-w-6xl mx-auto p-4 lg:p-8">
+        <AnimatePresence>
+          {filteredRecipes.length === 0 ? (
+            <motion.div 
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="text-center py-20"
+            >
+              <span className="text-5xl block mb-4">🔍</span>
+              <h2 className="text-xl text-gray-600">Nenhuma receita encontrada para "{searchTerm}".</h2>
+            </motion.div>
+          ) : (
+            <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredRecipes.map(recipe => (
+                <motion.div
+                  layout
+                  key={recipe.id}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  whileHover={{ y: -5 }}
+                  onClick={() => setSelectedRecipe(recipe)}
+                  className="bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-xl transition-all cursor-pointer group flex flex-col h-full"
+                >
+                  {/* TOP BANNER COLORIDO */}
+                  <div className={`h-32 ${recipe.color} relative flex items-center justify-center p-4 transition-colors`}>
+                    <span className="absolute top-3 left-4 bg-white/70 backdrop-blur-sm text-xs px-2 py-1 rounded-full font-semibold text-gray-700">
+                      {recipe.category}
+                    </span>
+                    <button 
+                      onClick={(e) => toggleFavorite(e, recipe.id)}
+                      className="absolute top-3 right-4 p-2 bg-white/70 backdrop-blur-sm rounded-full hover:bg-white transition-colors"
+                    >
+                      <Heart className={`w-5 h-5 transition-colors ${favorites.includes(recipe.id) ? 'fill-pink-500 text-pink-500' : 'text-gray-400 hover:text-pink-400'}`} />
+                    </button>
+                    {/* Ícone 3D / Emoji escalado */}
+                    <span className="text-6xl drop-shadow-md group-hover:scale-110 transition-transform duration-300 mt-4">
+                      {recipe.icon}
+                    </span>
+                  </div>
+
+                  {/* CONTEÚDO DO CARTÃO */}
+                  <div className="p-5 flex flex-col flex-grow">
+                    <h3 className="text-xl font-extrabold text-gray-900 mb-2 leading-tight">{recipe.title}</h3>
+                    <p className="text-sm text-gray-500 mb-4 font-normal line-clamp-2">{recipe.description}</p>
+                    
+                    <div className="mt-auto flex flex-wrap gap-2">
+                      <InfoBadge icon={Clock} text={recipe.time} />
+                      <InfoBadge icon={Flame} text={recipe.calories} />
+                      <InfoBadge icon={ChefHat} text={recipe.difficulty} />
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </main>
+
+      {/* MODAL DA RECEITA (FRAMER MOTION) */}
+      <AnimatePresence>
+        {selectedRecipe && (
+          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-hidden pointer-events-none">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedRecipe(null)}
+              className="absolute inset-0 bg-black/40 backdrop-blur-sm pointer-events-auto"
+            />
+            
+            {/* Modal Content */}
+            <motion.div
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className={`relative w-full max-w-4xl max-h-[90vh] bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl flex flex-col pointer-events-auto border-t-8 ${selectedRecipe.color.replace('bg-', 'border-').split('-')[0] + '-' + selectedRecipe.color.split('-')[2] /* Pega a cor base para borda */}`}
+              style={{
+                borderColor: selectedRecipe.color === 'bg-yellow-100' ? '#fef08a' :
+                             selectedRecipe.color === 'bg-green-100' ? '#bbf7d0' :
+                             selectedRecipe.color === 'bg-purple-100' ? '#e9d5ff' :
+                             selectedRecipe.color === 'bg-orange-100' ? '#fed7aa' : '#fbcfe8'
+              }}
+            >
+              {/* Botão Fechar flutuante */}
+              <button 
+                onClick={() => setSelectedRecipe(null)}
+                className="absolute right-4 top-4 z-10 p-2 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-500 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              {/* Cabeçalho Modal */}
+              <div className={`p-6 sm:p-8 shrink-0 flex flex-col sm:flex-row gap-6 items-center sm:items-start ${selectedRecipe.color} rounded-t-2xl sm:rounded-t-[20px]`}>
+                <div className="w-24 h-24 shrink-0 bg-white/50 backdrop-blur-md rounded-2xl flex items-center justify-center shadow-sm">
+                  <span className="text-5xl drop-shadow-md">{selectedRecipe.icon}</span>
+                </div>
+                <div className="flex-grow text-center sm:text-left">
+                  <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold mb-2 ${selectedRecipe.badgeColor}`}>
+                    {selectedRecipe.category}
+                  </span>
+                  <h2 className="text-3xl font-extrabold text-gray-900 mb-2">{selectedRecipe.title}</h2>
+                  <p className="text-gray-700 font-normal">{selectedRecipe.description}</p>
+                  
+                  <div className="mt-4 flex flex-wrap justify-center sm:justify-start gap-3">
+                    <span className="flex items-center text-sm font-semibold bg-white/70 px-3 py-1 rounded-lg">
+                      <Clock className="w-4 h-4 mr-2 text-gray-600" /> {selectedRecipe.time}
+                    </span>
+                    <span className="flex items-center text-sm font-semibold bg-white/70 px-3 py-1 rounded-lg">
+                      <Flame className="w-4 h-4 mr-2 text-gray-600" /> {selectedRecipe.calories}
+                    </span>
+                    <span className="flex items-center text-sm font-semibold bg-white/70 px-3 py-1 rounded-lg">
+                      <ChefHat className="w-4 h-4 mr-2 text-gray-600" /> Dificuldade {selectedRecipe.difficulty}
+                    </span>
+                    <span className="flex items-center text-sm font-semibold bg-white/70 px-3 py-1 rounded-lg">
+                      🍽️ Rendimento: {selectedRecipe.portions}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Corpo Modal Rolável */}
+              <div className="overflow-y-auto flex-grow p-6 sm:p-8 grid grid-cols-1 md:grid-cols-2 gap-8 custom-scrollbar">
+                
+                {/* Coluna Esquerda: Ingredientes */}
+                <div className="space-y-6">
+                  <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                        🛒 Lista de Compras
+                      </h3>
+                      <button 
+                        onClick={handleCopyList}
+                        className="text-xs font-semibold flex items-center gap-1 bg-white border border-gray-200 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-colors text-gray-600"
+                      >
+                        {copied ? <Check className="w-3 h-3 text-green-500" /> : <Copy className="w-3 h-3" />}
+                        {copied ? 'Copiada!' : 'Copiar'}
+                      </button>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      {selectedRecipe.ingredients.map((ing, idx) => {
+                        const isChecked = !!checkedIngredients[idx];
+                        return (
+                          <motion.div 
+                            key={idx}
+                            whileHover={{ x: 2 }}
+                            onClick={() => toggleIngredient(idx)}
+                            className="flex items-start gap-3 p-2 rounded-lg hover:bg-gray-100/50 cursor-pointer transition-colors"
+                          >
+                            <div className="mt-0.5 shrink-0">
+                              {isChecked ? (
+                                <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}>
+                                  <CheckCircle2 className="w-5 h-5 text-green-500" />
+                                </motion.div>
+                              ) : (
+                                <Circle className="w-5 h-5 text-gray-300" />
+                              )}
+                            </div>
+                            <span className={`text-sm md:text-base font-normal ${isChecked ? 'line-through text-gray-400' : 'text-gray-700'}`}>
+                              {ing}
+                            </span>
+                          </motion.div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Coluna Direita: Preparo e Dicas */}
+                <div className="space-y-8">
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2 mb-4">
+                      👩‍🍳 Modo de Preparo
+                    </h3>
+                    <div className="space-y-4">
+                      {selectedRecipe.steps.map((step, idx) => (
+                        <div key={idx} className="flex gap-4">
+                          <div className="shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-orange-100 text-orange-600 font-bold text-sm">
+                            {idx + 1}
+                          </div>
+                          <p className="text-gray-700 font-normal pt-1 leading-relaxed">
+                            {step}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="bg-orange-50/50 border border-orange-100 rounded-2xl p-5 space-y-4">
+                    <div>
+                      <h4 className="font-bold text-orange-800 text-sm mb-1">💡 Dica Extra</h4>
+                      <p className="text-sm text-gray-600 font-normal">{selectedRecipe.tips}</p>
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-orange-800 text-sm mb-1">🔄 Substituição</h4>
+                      <p className="text-sm text-gray-600 font-normal">{selectedRecipe.substitutions}</p>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      <style dangerouslySetInnerHTML={{__html: `
+        .no-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+        .no-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: #f1f1f1; 
+          border-radius: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #d1d5db; 
+          border-radius: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #9ca3af; 
+        }
+      `}} />
+    </div>
+  );
+}
